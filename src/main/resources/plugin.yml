@@ -1,0 +1,17 @@
+name: KikoEnergistics
+version: '1.0-SNAPSHOT'
+main: de.weinschenk.kikoEnergistics.KikoEnergistics
+api-version: '1.21'
+commands:
+  ke:
+    description: Öffnet das KE Netzwerk Terminal
+    usage: /ke
+  kesearch:
+    description: Suche nach einem bestimmten Item im KE Netzwerk
+    usage: /kesearch <itemname>
+  keprev:
+    description: Gehe zu der vorherigen Seite
+    usage: /keprev
+  menext:
+    description: Gehe zur nächsten Seite
+    usage: /kenext
