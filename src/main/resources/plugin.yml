@@ -12,6 +12,6 @@ commands:
   keprev:
     description: Gehe zu der vorherigen Seite
     usage: /keprev
-  menext:
+  kenext:
     description: Gehe zur nächsten Seite
     usage: /kenext

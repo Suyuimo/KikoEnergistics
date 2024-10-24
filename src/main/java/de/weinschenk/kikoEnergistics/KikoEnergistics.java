@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -67,48 +68,78 @@ public class KikoEnergistics extends JavaPlugin implements Listener {
     }
 
     // KE-Terminal mit Seiten öffnen
-    private void openKEGui(Player player, int page) {
+    public void openKEGui(Player player, int page) {
         UUID playerId = player.getUniqueId();
         List<ItemStack> items = keStorage.getOrDefault(playerId, new ArrayList<>());
-        Inventory keGui = Bukkit.createInventory(null, 54, "KE Terminal + Crafting"); // 54 Slots (maximale Größe)
 
-        // Items der aktuellen Seite anzeigen
+        // Berechne die maximale Seitenanzahl
+        int maxPage = (items.size() > 0) ? (int) Math.ceil(items.size() / (double) ITEMS_PER_PAGE) - 1 : 0;
+
+        // Sicherstellen, dass die Seitenzahl gültig ist
+        if (page < 0) {
+            page = 0; // Verhindert negative Seitenzahlen
+        }
+        if (page > maxPage) {
+            page = maxPage; // Verhindert das Blättern über die maximale Seitenanzahl hinaus
+        }
+
+        // KE-Terminal GUI mit 54 Slots erstellen
+        Inventory keGui = Bukkit.createInventory(null, 54, "KE Terminal - Seite " + (page + 1) + " / " + (maxPage + 1));
+
+        // Berechne den Startindex der Items basierend auf der Seite
         int startIndex = page * ITEMS_PER_PAGE;
-        for (int i = 0; i < ITEMS_PER_PAGE; i++) {
+
+        // Fülle die GUI mit Items der aktuellen Seite oder leeren Slots (AIR)
+        for (int i = 0; i < 45; i++) { // Bis Slot 44, da 45 bis 53 Crafting und spezielle Slots sind
             if (startIndex + i < items.size()) {
-                keGui.setItem(i, items.get(startIndex + i));
+                keGui.setItem(i, items.get(startIndex + i)); // Setze das Item in den Slot
+            } else {
+                keGui.setItem(i, new ItemStack(Material.AIR)); // Fülle leere Slots mit AIR
             }
         }
 
-        // Suchfeld (beispielsweise Slot 45, wenn du die untere Reihe für spezielle Slots nutzen willst)
-        ItemStack searchItem = new ItemStack(Material.PAPER);
-        searchItem.getItemMeta().setDisplayName(ChatColor.YELLOW + "Suchfeld");
-        keGui.setItem(45, searchItem); // Lege das Suchfeld in Slot 45
-
-        // Crafting-Bereich (in der letzten Reihe ab Slot 46 bis 53)
-        for (int i = 46; i <= 53; i++) {
-            keGui.setItem(i, new ItemStack(Material.AIR)); // Leerer Crafting-Bereich
+        // Crafting-Grid (Gelb markiert): Slots 19, 20, 21, 28, 29, 30, 37, 38, 39
+        for (int i : new int[]{19, 20, 21, 28, 29, 30, 37, 38, 39}) {
+            keGui.setItem(i, new ItemStack(Material.AIR)); // Leere Slots für das Crafting-Grid
         }
 
-        // Crafting-Ergebnis (falls benötigt, Slot 44 oder anderen Platz im Bereich anpassen)
-        keGui.setItem(44, new ItemStack(Material.AIR)); // Setze das Crafting-Ergebnis in einen Slot deiner Wahl
+        // Crafting-Ergebnis (Rot markiert): Slot 24
+        keGui.setItem(24, new ItemStack(Material.AIR)); // Leerer Slot für das Crafting-Ergebnis
 
+        // Öffne das Inventar für den Spieler
         player.openInventory(keGui);
-        playerPages.put(playerId, page); // Speichert die aktuelle Seite des Spielers
+
+        // Speichere die aktuelle Seite des Spielers
+        playerPages.put(playerId, page);
     }
+
+
+
+
+
+
+
 
 
     // Seite wechseln
     private void changePage(Player player, int direction) {
         UUID playerId = player.getUniqueId();
-        int currentPage = playerPages.getOrDefault(playerId, 0);
-        int newPage = currentPage + direction;
+        int currentPage = playerPages.getOrDefault(playerId, 0); // Aktuelle Seite des Spielers
+        int newPage = currentPage + direction; // Neue Seite berechnen
 
-        // Maximal zulässige Seitenzahl
-        int maxPage = (int) Math.ceil(keStorage.getOrDefault(playerId, new ArrayList<>()).size() / (double) ITEMS_PER_PAGE) - 1;
-        if (newPage < 0) newPage = 0;
-        if (newPage > maxPage) newPage = maxPage;
+        // Berechne die maximale Seitenanzahl basierend auf der Anzahl der Items
+        List<ItemStack> items = keStorage.getOrDefault(playerId, new ArrayList<>());
+        int maxPage = (int) Math.ceil(items.size() / (double) ITEMS_PER_PAGE) - 1;
 
+        // Verhindere, dass der Spieler auf ungültige Seiten wechselt
+        if (newPage < 0) {
+            newPage = 0; // Verhindert negative Seitenzahlen
+        }
+        if (newPage > maxPage) {
+            newPage = maxPage; // Verhindert das Blättern über die maximale Seitenanzahl hinaus
+        }
+
+        // Öffne die neue Seite
         openKEGui(player, newPage);
     }
 
@@ -140,19 +171,48 @@ public class KikoEnergistics extends JavaPlugin implements Listener {
         UUID playerId = player.getUniqueId();
         List<ItemStack> items = keStorage.getOrDefault(playerId, new ArrayList<>());
 
+        // Aktuelle Seite des Spielers abrufen
         int currentPage = playerPages.getOrDefault(playerId, 0);
         int startIndex = currentPage * ITEMS_PER_PAGE;
 
-        for (int i = 0; i < ITEMS_PER_PAGE; i++) {
+        // Überprüfen, ob der Startindex negativ ist oder außerhalb der Grenzen liegt
+        if (startIndex < 0) {
+            startIndex = 0; // Verhindere, dass der Index negativ wird
+        }
+
+        // Liste erweitern, falls sie zu klein ist, um die aktuelle Seite zu speichern
+        while (items.size() < startIndex + ITEMS_PER_PAGE) {
+            items.add(null); // Leere Slots hinzufügen
+        }
+
+        // Speichere alle relevanten Slots (die ersten 45 Slots)
+        for (int i = 0; i < 45; i++) {
+            ItemStack item = inventory.getItem(i); // Hol das Item aus dem Inventar
             if (startIndex + i < items.size()) {
-                items.set(startIndex + i, inventory.getItem(i));
-            } else {
-                items.add(inventory.getItem(i));
+                items.set(startIndex + i, item); // Setze das Item in die Liste
             }
         }
 
+        // Optional: Speichere auch die Crafting-Grid-Slots (19-21, 28-30, 37-39)
+        int[] craftingSlots = {19, 20, 21, 28, 29, 30, 37, 38, 39};
+        for (int slot : craftingSlots) {
+            ItemStack item = inventory.getItem(slot);
+            if (item != null && item.getType() != Material.AIR) {
+                items.add(item); // Füge das Crafting-Item der Liste hinzu
+            }
+        }
+
+        // Optional: Speichere das Crafting-Ergebnis (Slot 24), wenn vorhanden
+        ItemStack result = inventory.getItem(24);
+        if (result != null && result.getType() != Material.AIR) {
+            items.add(result); // Füge das Crafting-Ergebnis hinzu
+        }
+
+        // Speichere die aktualisierte Liste in der HashMap
         keStorage.put(playerId, items);
     }
+
+
 
     // Setzt Spieler in den Suchmodus
     public void setPlayerInSearchMode(Player player) {
