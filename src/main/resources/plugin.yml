@@ -1,0 +1,10 @@
+name: KikoEnergistics
+version: '1.0-SNAPSHOT'
+main: de.weinschenk.kikoEnergistics.KikoEnergistics
+api-version: '1.21'
+authors: [ Suyuimo ]
+commands:
+  kikoenergistics:
+    usage: /storage <?material>
+    aliases: [ke, storage, kestorage, kechest]
+    description: "Open the global storage"
