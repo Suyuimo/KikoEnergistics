@@ -19,9 +19,9 @@ public class PlayerJoinListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event){
         event.getPlayer().addResourcePack(UUID.randomUUID(),
-                "https://www.dropbox.com/scl/fi/is4o9dv7uofs3yb5nto98/KikoEnergistics.zip?rlkey=p7vrdkb5n25xcypljnlxg3z6c&st=erspbyti&dl=1",
+                "https://github.com/Suyuimo/KikoEnergistics/raw/refs/heads/master/KikoEnergistics-Texture-Pack.zip",
                 DatatypeConverter.parseHexBinary("ca52d4cf52b8680a3bb293b7ec47bfd69a07587d"),
-                "Please, allow resource packs for better experience!",
+                "This Resspurce Pack must be installed as the “Kiko Energistics” plugin is installed on the server. This resource pack does not change any textures, so it can be combined with the existing texture packs! Only additional textures are added.",
                 true);
     }
 
