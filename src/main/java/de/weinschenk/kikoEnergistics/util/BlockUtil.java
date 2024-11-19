@@ -30,6 +30,18 @@ public class BlockUtil {
         }
     }
 
+    public static String getHolder(Sign sign){
+        try{
+            return PlainTextComponentSerializer.plainText().serialize(sign.getSide(Side.FRONT).line(2));
+        } catch (IllegalArgumentException e) {
+            try {
+                return PlainTextComponentSerializer.plainText().serialize(sign.getSide(Side.FRONT).line(2));
+            } catch (IllegalArgumentException ex) {
+                return null;
+            }
+        }
+    }
+
     public static Material getMaterial(String material){
         return getMaterial(material, false);
     }

@@ -1,9 +1,12 @@
 package de.weinschenk.kikoEnergistics.listeners;
 
 import de.weinschenk.kikoEnergistics.KikoEnergistics;
+import de.weinschenk.kikoEnergistics.gui.StorageInventory;
+import de.weinschenk.kikoEnergistics.manager.PlayerStorageManager;
 import de.weinschenk.kikoEnergistics.util.BlockUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Hopper;
 import org.bukkit.block.Sign;
@@ -34,7 +37,12 @@ public class HopperListener implements Listener {
             if(sign == null)
                 return;
             Material material = BlockUtil.getFilteringMaterial(sign);
-            List<ItemStack> filtered = plugin.getStorageManager().getFilteredItems(material);
+
+            String holder = BlockUtil.getHolder(sign);
+            PlayerStorageManager manager = plugin.getStorageManager().fetch(holder);
+            if(manager == null)
+                return;
+            List<ItemStack> filtered = manager.getFilteredItems(material);
             if(filtered.isEmpty())
                 return;
 
@@ -48,10 +56,10 @@ public class HopperListener implements Listener {
             Bukkit.getScheduler().runTask(plugin, ()->{
                 if(targetStorageItem.isEmpty()){
                     hopper.getInventory().addItem(filtered.getFirst().asOne());
-                    plugin.getStorageManager().removeItem(filtered.getFirst(), 1);
+                    manager.removeItem(filtered.getFirst(), 1);
                 }
                 hopper.getInventory().addItem(targetStorageItem.asOne());
-                plugin.getStorageManager().removeItem(targetStorageItem, 1);
+                manager.removeItem(targetStorageItem, 1);
             });
             hopper.setTransferCooldown(8);
             hopper.update();
@@ -80,12 +88,15 @@ public class HopperListener implements Listener {
 
     @EventHandler
     public void onTransfer(InventoryMoveItemEvent event){
-        if(event.getSource().getHolder() instanceof Hopper hopper){
-            if(event.getDestination().getHolder() instanceof Chest chest){
+        if(event.getSource().getHolder() instanceof Hopper hopper)
+            if(event.getDestination().getHolder() instanceof Chest chest)
                 if(BlockUtil.getNearestSign(chest.getBlock()) != null)
                     event.setCancelled(true);
-            }
-        }
+
+        if(event.getDestination().getHolder() instanceof Hopper hopper)
+            if(event.getSource().getHolder() instanceof Chest chest)
+                if(BlockUtil.getNearestSign(chest.getBlock()) != null)
+                    event.setCancelled(true);
     }
 
 }

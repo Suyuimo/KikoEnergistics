@@ -1,6 +1,7 @@
 package de.weinschenk.kikoEnergistics.gui;
 
-import de.weinschenk.kikoEnergistics.manager.StorageManager;
+import de.weinschenk.kikoEnergistics.manager.GlobalStorageManager;
+import de.weinschenk.kikoEnergistics.manager.PlayerStorageManager;
 import de.weinschenk.kikoEnergistics.util.FormatUtil;
 import de.weinschenk.kikoEnergistics.util.InventoryUtil;
 import de.weinschenk.kikoEnergistics.util.ItemBuilder;
@@ -10,22 +11,21 @@ import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class StorageInventory extends GUIInventory {
     private int page;
 
-    private final StorageManager storageManager;
+    private final PlayerStorageManager playerStorageManager;
     private Material filterMaterial;
 
-    public StorageInventory(StorageManager storageManager, int page){
-        this.storageManager = storageManager;
+    public StorageInventory(PlayerStorageManager globalStorageManager, int page){
+        this.playerStorageManager = globalStorageManager;
         this.page = page;
     }
 
-    public StorageInventory(StorageManager storageManager, int page, Material material){
-        this.storageManager = storageManager;
+    public StorageInventory(PlayerStorageManager globalStorageManager, int page, Material material){
+        this.playerStorageManager = globalStorageManager;
         this.page = page;
         filterMaterial = material;
     }
@@ -70,8 +70,12 @@ public class StorageInventory extends GUIInventory {
         }
     }
 
+    public PlayerStorageManager getPlayerStorageManager() {
+        return playerStorageManager;
+    }
+
     public List<ItemStack> getFilteredItems(){
-        return storageManager.getFilteredItems(getFilterMaterial());
+        return playerStorageManager.getFilteredItems(getFilterMaterial());
     }
 
     public List<ItemStack> getCurrentPageItems(){
@@ -108,7 +112,7 @@ public class StorageInventory extends GUIInventory {
     }
 
     public void updatePage(HumanEntity entity, int page){
-        entity.openInventory(new StorageInventory(storageManager, page).getInventory(true));
+        entity.openInventory(new StorageInventory(playerStorageManager, page).getInventory(true));
     }
 
 }

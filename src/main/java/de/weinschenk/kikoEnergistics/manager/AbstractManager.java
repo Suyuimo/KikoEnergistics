@@ -1,5 +1,6 @@
 package de.weinschenk.kikoEnergistics.manager;
 
+import com.google.gson.annotations.Expose;
 import de.weinschenk.kikoEnergistics.KikoEnergistics;
 
 public abstract class AbstractManager {

@@ -5,18 +5,18 @@ import de.weinschenk.kikoEnergistics.listeners.ChestInteractListener;
 import de.weinschenk.kikoEnergistics.listeners.HopperListener;
 import de.weinschenk.kikoEnergistics.listeners.InventoryListener;
 import de.weinschenk.kikoEnergistics.listeners.PlayerJoinListener;
-import de.weinschenk.kikoEnergistics.manager.StorageManager;
+import de.weinschenk.kikoEnergistics.manager.GlobalStorageManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class KikoEnergistics extends JavaPlugin {
 
     private static KikoEnergistics instance;
-    private StorageManager storageManager;
+    private GlobalStorageManager globalStorageManager;
 
     @Override
     public void onEnable() {
         instance = this;
-        storageManager = new StorageManager(this);
+        globalStorageManager = new GlobalStorageManager(this);
 
         registerEvents();
         registerCommands();
@@ -35,8 +35,8 @@ public final class KikoEnergistics extends JavaPlugin {
         getCommand("kikoenergistics").setExecutor(keCommand);
     }
 
-    public StorageManager getStorageManager() {
-        return storageManager;
+    public GlobalStorageManager getStorageManager() {
+        return globalStorageManager;
     }
 
     public static KikoEnergistics getInstance() {

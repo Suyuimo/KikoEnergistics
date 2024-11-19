@@ -16,18 +16,23 @@ public class PlayerJoinListener implements Listener {
         this.plugin = plugin;
     }
 
+    // Texture Pack erzwingen
+
+    //Deakivert
+
+    /*
+
     @EventHandler
     public void onJoin(PlayerJoinEvent event){
-
-      //  TexturePack erzwungen deaktiviert - Kann bei bedarf aktiviert werden
-    /*
         event.getPlayer().addResourcePack(UUID.randomUUID(),
                 "https://github.com/Suyuimo/KikoEnergistics/raw/refs/heads/master/KikoEnergistics-Texture-Pack.zip",
                 DatatypeConverter.parseHexBinary("ca52d4cf52b8680a3bb293b7ec47bfd69a07587d"),
-                "This Resspurce Pack must be installed as the “Kiko Energistics” plugin is installed on the server. This resource pack does not change any textures, so it can be combined with the existing texture packs! Only additional textures are added.",
+                "Please, allow resource packs for better experience!",
                 true);
+    }
+
+
 
      */
-    }
 
 }

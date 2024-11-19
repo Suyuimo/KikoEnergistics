@@ -28,10 +28,10 @@ public class KECommand implements CommandExecutor, TabCompleter {
         if(sender instanceof Player player){
             if(args.length == 0){
                 plugin.getStorageManager().getInventoryManager().openInventory(
-                        player, new StorageInventory(plugin.getStorageManager(), 0));
+                        player, new StorageInventory(plugin.getStorageManager().get(player.getName()), 0));
             } else {
                 plugin.getStorageManager().getInventoryManager().openInventory(
-                        player, new StorageInventory(plugin.getStorageManager(), 0, BlockUtil.getMaterial(args[0])));
+                        player, new StorageInventory(plugin.getStorageManager().get(player.getName()), 0, BlockUtil.getMaterial(args[0])));
             }
             return true;
         } else
@@ -48,3 +48,4 @@ public class KECommand implements CommandExecutor, TabCompleter {
         return List.of();
     }
 }
+

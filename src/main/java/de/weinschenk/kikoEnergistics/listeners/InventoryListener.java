@@ -54,7 +54,7 @@ public class InventoryListener implements Listener{
                         int toRemove = itemStack.getMaxStackSize();
                         for (Map.Entry<Integer, ItemStack> item : event.getWhoClicked().getInventory().addItem(itemStack.getAmount() <= itemStack.getMaxStackSize() ? itemStack.clone() : itemStack.asQuantity(itemStack.getMaxStackSize())).entrySet())
                             toRemove -= item.getValue().getAmount();
-                        plugin.getStorageManager().removeItem(itemStack, toRemove);
+                        inventory.getPlayerStorageManager().removeItem(itemStack, toRemove);
                         return;
                     }
 
@@ -76,13 +76,13 @@ public class InventoryListener implements Listener{
                         } else
                             return;
 
-                        plugin.getStorageManager().removeItem(itemStack, toRemove);
+                        inventory.getPlayerStorageManager().removeItem(itemStack, toRemove);
                     });
                 }
             } else if(event.getClickedInventory() instanceof PlayerInventory){
                 if(event.getClick().isShiftClick() && event.getCurrentItem() != null) {
                     event.setCancelled(true);
-                    if(plugin.getStorageManager().addItem(event.getCurrentItem().clone()))
+                    if(inventory.getPlayerStorageManager().addItem(event.getCurrentItem().clone()))
                         inventory.setPage(inventory.getLastPage(), false);
                     event.getCurrentItem().setAmount(0);
                     inventory.build();

@@ -2,7 +2,7 @@ package de.weinschenk.kikoEnergistics.util;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import de.weinschenk.kikoEnergistics.manager.StorageManager;
+import de.weinschenk.kikoEnergistics.manager.GlobalStorageManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.ItemStack;
@@ -15,12 +15,12 @@ public class ItemStackAdapter implements JsonSerializer<ItemStack>, JsonDeserial
 
     @Override
     public ItemStack deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        Map<String, Object> map = StorageManager.GSON.fromJson(json, TypeToken.get(Map.class).getType());
+        Map<String, Object> map = GlobalStorageManager.GSON.fromJson(json, TypeToken.get(Map.class).getType());
         map.putIfAbsent("v", Bukkit.getUnsafe().getDataVersion());
 
         if(map.containsKey("meta")) {
             Map<String, Object> meta = (Map<String, Object>) map.get("meta");
-            ConfigurationSerializable deserializedMeta = context.deserialize(StorageManager.GSON.toJsonTree(meta), ConfigurationSerializable.class);
+            ConfigurationSerializable deserializedMeta = context.deserialize(GlobalStorageManager.GSON.toJsonTree(meta), ConfigurationSerializable.class);
             map.remove("meta");
             ItemStack is = ItemStack.deserialize(map);
             is.setItemMeta((ItemMeta) deserializedMeta);
@@ -38,7 +38,7 @@ public class ItemStackAdapter implements JsonSerializer<ItemStack>, JsonDeserial
             JsonElement meta = context.serialize(src.getItemMeta(), ConfigurationSerializable.class);
             map.put("meta", meta.getAsJsonObject());
         }
-        return StorageManager.GSON.toJsonTree(map);
+        return GlobalStorageManager.GSON.toJsonTree(map);
     }
 
 }

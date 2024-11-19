@@ -17,18 +17,28 @@ public class InventoryManager extends KeyedManager<UUID, GUIInventory> implement
         super(plugin);
     }
 
-    public void updateAll(){
+    @Override
+    public GUIInventory fetch(UUID key) {
+        return get(key);
+    }
+
+    public void updateAll(String storageHolderName){
         for (Map.Entry<UUID, GUIInventory> entry : getAll().entrySet()) {
             Player player = Bukkit.getPlayer(entry.getKey());
             if(player == null) {
                 getAll().remove(entry.getKey());
                 return;
             }
-            if(player.getOpenInventory().getTopInventory().getHolder() instanceof StorageInventory inventory){
+            if(player.getOpenInventory().getTopInventory().getHolder() instanceof StorageInventory inventory &&
+                    (storageHolderName == null || storageHolderName.isEmpty() || inventory.getPlayerStorageManager().getPlayerName().equalsIgnoreCase(storageHolderName))){
                 inventory.build();
             } else
                 getAll().remove(entry.getKey());
         }
+    }
+
+    public void updateAll(){
+        updateAll(null);
     }
 
     public void openInventory(Player player, GUIInventory inventory){
